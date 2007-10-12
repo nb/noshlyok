@@ -3,7 +3,7 @@
 Plugin Name: Без шльокавица
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
-Version: 0.01
+Version: 0.02
 License: The source code below is in the public domain
 */ 
 
