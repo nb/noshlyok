@@ -15,7 +15,7 @@ function noshlyok_shlyok_allowed($post_id) {
 function noshlyok_verify($comment_data) {
     if (!preg_match("/[а-яА-Я]/u", $comment_data['comment_content'])) {
 		if (!noshlyok_shlyok_allowed($comment_data['comment_post_ID'])) {
-        	wp_die('Моля, пишете на кирилица!');
+			wp_die("<p>Моля, пишете на кирилица!</p><p>Please use cyrillic letters for your comment!</p><p><a href='javascript:history.back()'>&laquo; Назад / Back</a></p>");
 		}
     }
     return $comment_data;
