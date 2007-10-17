@@ -1,8 +1,10 @@
 <?php
 /*
 Plugin Name: Без шльокавица
+Plugin URI: http://wordpress.org/extend/plugins/noshlyok/
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
+Author URI: http://nb.niichavo.org/
 Version: 0.03-alpha
 License: The source code below is in the public domain
 */ 
