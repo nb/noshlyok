@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/noshlyok/
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
 Author URI: http://nb.niichavo.org/
-Version: 0.03-alpha
+Version: 0.03
 License: The source code below is in the public domain
 */ 
 
@@ -37,22 +37,28 @@ function noshlyok_disallow($post_id) {
 }
 
 function noshlyok_post_sidebar() {
+?>
+	<fieldset id="cyr" class="dbx-box postbox">
+		<h3 class="dbx-handle">Шльокавица</h3>
+		<div class="dbx-content">
+				<?php noshlyok_box_contents(); ?>
+		</div>
+	</fieldset>
+<?php
+}
+
+function noshlyok_box_contents($output = true) {
 	global $post;
 	$checked = '';
 	if (isset($post->ID) && $post->ID > 0 && noshlyok_shlyok_allowed($post->ID)) {
 		$checked = 'checked="checked"';
 	}
-?>
-	<fieldset id="cyr" class="dbx-box">
-		<h3 class="dbx-handle">Шльокавица</h3>
-		<div class="dbx-content">
-			<p>
-				<input name="allow_shlyok" type="checkbox" id="allow_shlyok_check" <?php echo $checked; ?>/>
+	$contents = <<<HTML
+				<input name="allow_shlyok" type="checkbox" id="allow_shlyok_check" $checked />
 				<label for="allow_shlyok_check">Позволяване на шльокавица в коментарите по тази публикация</label>
-			</p>
-		</div>
-	</fieldset>
-<?php
+HTML;
+	if ($output) echo $contents;
+	return $contents;
 }
 
 function noshlyok_save_post($post_id) {
@@ -65,9 +71,24 @@ function noshlyok_save_post($post_id) {
 	}
 }
 
-add_action('dbx_post_sidebar', 'noshlyok_post_sidebar');
-add_action('dbx_page_sidebar', 'noshlyok_post_sidebar');
-add_action('save_post', 'noshlyok_save_post');
+function noslyok_register_boxes() {
+	if (function_exists('add_meta_box')) {
+		add_meta_box('noshlyok', 'Шльокавица', 'noshlyok_box_contents', 'post');
+		add_meta_box('noshlyok', 'Шльокавица', 'noshlyok_box_contents', 'page');
+	} else {
+		add_action('dbx_post_sidebar', 'noshlyok_post_sidebar');
+		add_action('dbx_page_sidebar', 'noshlyok_post_sidebar');
+	}
+}
 
-add_filter('preprocess_comment', 'noshlyok_verify');
+function noshlyok_init() {
+	if (is_admin()) {
+		add_action('admin_menu', 'noslyok_register_boxes');
+	}
+	add_action('save_post', 'noshlyok_save_post');
+	add_filter('preprocess_comment', 'noshlyok_verify');
+}
+
+add_action('init', 'noshlyok_init');
+
 
