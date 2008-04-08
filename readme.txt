@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Без шльокавица ===
 Contributors: nbachiyski
 Tags: comments, spam
 Requires at least: 2.1
