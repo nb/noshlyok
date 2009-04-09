@@ -2,7 +2,7 @@
 Contributors: nbachiyski
 Tags: comments, spam
 Requires at least: 2.1
-Tested up to: 2.5
+Tested up to: 2.7.1
 Stable tag: 0.03
 
 Не позволява изпращането на коментари без поне един кирилишки символ.
