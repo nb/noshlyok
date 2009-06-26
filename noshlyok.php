@@ -5,9 +5,16 @@ Plugin URI: http://wordpress.org/extend/plugins/noshlyok/
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
 Author URI: http://nb.niichavo.org/
-Version: 0.03
+Version: 0.04
 License: The source code below is in the public domain
 */ 
+
+function noshlyok_die( $message ) {
+    if ( defined('DOING_AJAX') && DOING_AJAX )
+        die($message);
+    else
+        wp_die('<p>'.$message."</p><p><a href='javascript:history.back()'>&laquo; Назад / Back</a></p>");
+}
 
 function noshlyok_shlyok_allowed($post_id) {
 	$allow_shlyok = get_post_meta($post_id, 'allow_shlyok', true);
@@ -15,11 +22,27 @@ function noshlyok_shlyok_allowed($post_id) {
 }
 
 function noshlyok_verify($comment_data) {
+	
+	if ( noshlyok_shlyok_allowed($comment_data['comment_post_ID']) ) {
+		return $comment_data;
+	}
+	
+	// do not allow comments without cyrillic characters
     if (!preg_match("/[а-яА-Я]/u", $comment_data['comment_content'])) {
-		if (!noshlyok_shlyok_allowed($comment_data['comment_post_ID'])) {
-			wp_die("<p>Моля, пишете на кирилица!</p><p>Please use cyrillic letters for your comment!</p><p><a href='javascript:history.back()'>&laquo; Назад / Back</a></p>");
-		}
+		noshlyok_die("Моля, пишете на кирилица!</p><p>Please use cyrillic letters for your comment!");
     }
+	// do not allow .ru emails and web sites
+	if (!preg_match('|^http://|', $comment_data['comment_author_url'])) {
+		$comment_data['comment_author_url'] = 'http://'.$comment_data['comment_author_url'];
+	}
+    $parsed = parse_url($comment_data['comment_author_url']);
+	error_log(print_r($parsed, true));
+    if ( (isset($parsed['host']) && preg_match("|\.ru$|", $parsed['host'])) ||
+			preg_match("|\.ru$|", $comment_data['comment_author_email']) || 
+			preg_match("/ы|ё|э/i", $comment_data['comment_content'])) {
+        noshlyok_die('Рускиий &mdash; нет!');
+	}
+
     return $comment_data;
 }
 
@@ -41,7 +64,7 @@ function noshlyok_post_sidebar() {
 	<fieldset id="cyr" class="dbx-box postbox">
 		<h3 class="dbx-handle">Шльокавица</h3>
 		<div class="dbx-content">
-				<?php noshlyok_box_contents(); ?>
+			<?php noshlyok_box_contents(); ?>
 		</div>
 	</fieldset>
 <?php
