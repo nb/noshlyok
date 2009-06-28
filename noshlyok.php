@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/noshlyok/
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
 Author URI: http://nb.niichavo.org/
-Version: 0.04
+Version: 0.05
 License: The source code below is in the public domain
 */ 
 
@@ -32,15 +32,14 @@ function noshlyok_verify($comment_data) {
 		noshlyok_die("Моля, пишете на кирилица!</p><p>Please use cyrillic letters for your comment!");
     }
 	// do not allow .ru emails and web sites
-	if (!preg_match('|^http://|', $comment_data['comment_author_url'])) {
+	if (!preg_match('|^http://|', $comment_data['comment_author_url']) && $comment_data['comment_author_url']) {
 		$comment_data['comment_author_url'] = 'http://'.$comment_data['comment_author_url'];
 	}
-    $parsed = parse_url($comment_data['comment_author_url']);
-	error_log(print_r($parsed, true));
+    $parsed = @parse_url($comment_data['comment_author_url']);
     if ( (isset($parsed['host']) && preg_match("|\.ru$|", $parsed['host'])) ||
 			preg_match("|\.ru$|", $comment_data['comment_author_email']) || 
 			preg_match("/ы|ё|э/i", $comment_data['comment_content'])) {
-        noshlyok_die('Рускиий &mdash; нет!');
+        noshlyok_die('Русский &mdash; нет!');
 	}
 
     return $comment_data;
