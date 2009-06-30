@@ -112,5 +112,3 @@ function noshlyok_init() {
 }
 
 add_action('init', 'noshlyok_init');
-
-

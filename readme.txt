@@ -3,7 +3,7 @@ Contributors: nbachiyski
 Tags: comments, spam
 Requires at least: 2.1
 Tested up to: 2.9
-Stable tag: 0.04
+Stable tag: 0.05
 
 Не позволява изпращането на коментари без поне един кирилишки символ.
 
@@ -28,7 +28,7 @@ Stable tag: 0.04
 == Changelog ==
 
 = 0.05 =
-* Без повече грешки, предизвикани от лоши аргументи към `parse_url()`. Забелязано от Васил Тошков <cloxy@cloxy.com>
+* Отърваване от грешките, предизвикани от лоши аргументи към `parse_url()`. Забелязано от Васил Тошков <cloxy@cloxy.com>
 * Руский всъщност се пише Русский
 * Премахване на излишен `error_log()`
 
