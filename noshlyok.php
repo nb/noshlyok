@@ -7,13 +7,13 @@ Author: Николай Бачийски
 Author URI: http://nikolay.bg/
 Version: 0.06
 License: The source code below is in the public domain
-*/ 
+*/
 
 function noshlyok_die( $message ) {
-    if ( defined('DOING_AJAX') && DOING_AJAX )
-        die( $message );
-    else
-        wp_die( '<p>' . $message . "</p><p><a href='javascript:history.back()'>&laquo; Назад / Back</a></p>" );
+	if ( defined('DOING_AJAX') && DOING_AJAX )
+		die( $message );
+	else
+		wp_die( '<p>' . $message . "</p><p><a href='javascript:history.back()'>&laquo; Назад / Back</a></p>" );
 }
 
 function noshlyok_shlyok_allowed( $post_id ) {
@@ -22,32 +22,32 @@ function noshlyok_shlyok_allowed( $post_id ) {
 }
 
 function noshlyok_verify( $comment_data ) {
-	
+
 	$top_level_domain_re = '/\.(ru|ua)$/';
 	$cyrillic_letters_re = '/[а-яА-Я]/u';
 	$no_russian_letters_re = '/ы|ё|э|Ы|Ё|Э/';
-	
+
 	if ( noshlyok_shlyok_allowed( $comment_data['comment_post_ID'] ) ) {
 		return $comment_data;
 	}
-	
+
 	// do not allow comments without cyrillic characters
-    if ( !preg_match( $cyrillic_letters_re, $comment_data['comment_content'] ) ) {
+	if ( !preg_match( $cyrillic_letters_re, $comment_data['comment_content'] ) ) {
 		noshlyok_die( 'Моля, пишете на кирилица!</p><p>Please, use cyrillic letters for your comment!' );
-    }
+	}
 	// do not allow .ru emails and web sites
 	if ( !preg_match( '|^http://|', $comment_data['comment_author_url'] ) && $comment_data['comment_author_url'] ) {
 		$comment_data['comment_author_url'] = 'http://' . $comment_data['comment_author_url'];
 	}
-    $parsed = @parse_url( $comment_data['comment_author_url'] );
-    if ( ( isset($parsed['host'] ) && preg_match( $top_level_domain_re, $parsed['host'] ) ) ||
-			preg_match( $top_level_domain_re, $comment_data['comment_author_email'] ) || 
+	$parsed = @parse_url( $comment_data['comment_author_url'] );
+	if ( ( isset($parsed['host'] ) && preg_match( $top_level_domain_re, $parsed['host'] ) ) ||
+			preg_match( $top_level_domain_re, $comment_data['comment_author_email'] ) ||
 			preg_match( $no_russian_letters_re, $comment_data['comment_content'] ) ||
 			preg_match( $no_russian_letters_re, $comment_data['comment_author'] ) ) {
-        noshlyok_die( 'Русский &mdash; нет!' );
+		noshlyok_die( 'Русский &mdash; нет!' );
 	}
 
-    return $comment_data;
+	return $comment_data;
 }
 
 
