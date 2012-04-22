@@ -75,8 +75,8 @@ class Noshlyok {
 	}
 
 	function save_post( $post_id ) {
-		if ( isset( $_POST['allow_shlyok'] ) ) {
-			if ( 'on' == $_POST['allow_shlyok'] ) {
+		if ( isset( $_POST['allow-shlyok'] ) ) {
+			if ( 'on' == $_POST['allow-shlyok'] ) {
 				$this->allow($post_id);
 			}
 		} else {
@@ -114,8 +114,8 @@ class Noshlyok {
 			$checked = 'checked="checked"';
 		}
 		$contents = <<<HTML
-					<input name="allow_shlyok" type="checkbox" id="allow_shlyok_check" $checked />
-					<label for="allow_shlyok_check">Позволяване на шльокавица в коментарите по тази публикация</label>
+					<input name="allow-shlyok" type="checkbox" id="allow-shlyok-check" $checked />
+					<label for="allow-shlyok-check">Позволяване на шльокавица в коментарите по тази публикация</label>
 HTML;
 		if ( $output ) echo $contents;
 		return $contents;
