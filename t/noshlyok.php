@@ -41,4 +41,8 @@ class WP_Test_Noshlyok extends WP_UnitTestCase {
 		$this->assertTrue( $this->n->is_russian_url( 'http://dir.ru/news/latest?x=y&nomama=nobaba' ) );
 	}
 
+	function test_is_russian_should_not_catch_yo() {
+		$this->assertFalse( $this->n->is_russian_text( 'ьо, мен'));
+	}
+
 }

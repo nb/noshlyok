@@ -47,7 +47,7 @@ class Noshlyok {
 	}
 
 	function is_russian_text( $text ) {
-		return (bool)preg_match( '/ы|ё|э|Ы|Ё|Э/u', $text );
+		return (bool)preg_match( '/ы|ё|э|Ы|Ё|Э|ь[^о]+/', $text );
 	}
 
 	function is_russian_host_name( $host_name ) {
