@@ -1,0 +1,7 @@
+<phpunit
+	<!-- Enter the path to init.php in your local copy of https://github.com/nb/wordpress-tests/ -->
+	bootstrap=""
+	backupGlobals="false"
+	colors="true"
+></phpunit>
+

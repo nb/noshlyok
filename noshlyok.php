@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/noshlyok/
 Description: Не позволява изпращането на коментари без поне един кирилишки символ
 Author: Николай Бачийски
 Author URI: http://nikolay.bg/
-Version: 0.06
+Version: 1.0.0-alpha
 License: The source code below is in the public domain
 */
 
@@ -20,37 +20,54 @@ class Noshlyok {
 			add_action( 'admin_menu', array( $this, 'register_boxes' ) );
 		}
 		add_action( 'save_post', array( $this, 'save_post' ) );
-		add_filter( 'preprocess_comment', array( $this, 'verify' ) );
+		add_filter( 'preprocess_comment', array( $this, 'bail_on_unwanted_comment' ) );
 	}
 	
-	function verify( $comment_data ) {
-
-		$top_level_domain_re = '/\.(ru|ua)$/';
-		$cyrillic_letters_re = '/[а-яА-Я]/u';
-		$no_russian_letters_re = '/ы|ё|э|Ы|Ё|Э/';
+	function bail_on_unwanted_comment( $comment_data ) {
 
 		if ( $this->shlyok_allowed( $comment_data['comment_post_ID'] ) ) {
 			return $comment_data;
 		}
 
-		// do not allow comments without cyrillic characters
-		if ( !preg_match( $cyrillic_letters_re, $comment_data['comment_content'] ) ) {
+		if ( !$this->has_bulgarian_letters( $comment_data['comment_content'] ) ) {
 			$this->die_with_message( 'Моля, пишете на кирилица!</p><p>Please, use cyrillic letters for your comment!' );
 		}
-		// do not allow .ru emails and web sites
-		if ( !preg_match( '|^http://|', $comment_data['comment_author_url'] ) && $comment_data['comment_author_url'] ) {
-			$comment_data['comment_author_url'] = 'http://' . $comment_data['comment_author_url'];
-		}
-		$parsed = @parse_url( $comment_data['comment_author_url'] );
-		if ( ( isset($parsed['host'] ) && preg_match( $top_level_domain_re, $parsed['host'] ) ) ||
-				preg_match( $top_level_domain_re, $comment_data['comment_author_email'] ) ||
-				preg_match( $no_russian_letters_re, $comment_data['comment_content'] ) ||
-				preg_match( $no_russian_letters_re, $comment_data['comment_author'] ) ) {
+
+		if ( $this->is_russian_text( $comment_data['comment_content'] ) || 
+				$this->is_russian_email( $comment_data['comment_author_email']) ||
+				$this->is_russian_url( $comment_data['comment_author_url'] ) ) {
 			$this->die_with_message( 'Русский &mdash; нет!' );
 		}
 
 		return $comment_data;
 	}
+
+	function has_bulgarian_letters( $text ) {
+		return (bool)preg_match( '/[а-яА-Я]/u', $text );
+	}
+
+	function is_russian_text( $text ) {
+		return (bool)preg_match( '/ы|ё|э|Ы|Ё|Э/u', $text );
+	}
+
+	function is_russian_host_name( $host_name ) {
+		return (bool)preg_match( '/\.(ru|ua)$/', $host_name ); 
+	}
+
+	function is_russian_email( $email ) {
+		if ( !is_email( $email ) ) {
+			return false;
+		}
+		$host_name = substr( $email, strpos( $email, '@' ) + 1 );
+		return $this->is_russian_host_name( $host_name );
+	}
+
+	function is_russian_url( $url ) {
+		$parsed_url = @parse_url( $url );
+		$host_name = isset( $parsed_url['host'] )? $parsed_url['host'] : '';		
+		return $this->is_russian_host_name( $host_name );
+	} 
+
 
 	function die_with_message( $message ) {
 		if ( defined('DOING_AJAX') && DOING_AJAX )

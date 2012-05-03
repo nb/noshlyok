@@ -1,8 +1,8 @@
 === Без шльокавица ===
 Contributors: nbachiyski
 Tags: comments, spam
-Requires at least: 2.1
-Tested up to: 2.9
+Requires at least: 3.0
+Tested up to: 3.4
 Stable tag: 0.06
 
 Не позволява изпращането на коментари без поне един кирилски символ.
